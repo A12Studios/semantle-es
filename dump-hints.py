@@ -7,6 +7,7 @@ import heapq
 from numpy import dot
 from numpy.linalg import norm
 
+from tqdm import tqdm
 import re
 import time
 
@@ -26,10 +27,12 @@ def debug(sig, frame):
 
 signal.signal(signal.SIGUSR1, debug)  # Register handler
 
-
-model = word2vec.KeyedVectors.load_word2vec_format("../GoogleNews-vectors-negative300.bin", binary=True)
-
-print("loaded model...")
+# Set to None to read all words in the model. Useful to set a low number to test script.
+word_limit = None
+t_word2vec = time.process_time()
+print("loading word2vec file...")
+model = word2vec.KeyedVectors.load_word2vec_format("../GoogleNews-vectors-negative300.bin", binary=True, limit=word_limit)
+print(f'done in {time.process_time() - t_word2vec} seconds')
 
 def mag(v):
     return math.sqrt(sum(x * x for x in v))
@@ -51,32 +54,37 @@ def similarity(a, b):
 
 print("loaded moby...")
 
+t = tqdm(desc='loading words_alpha.txt')
 allowable_words = set()
 with open("words_alpha.txt") as walpha:
     for line in walpha.readlines():
         allowable_words.add(line.strip())
-
-print("loaded alpha...")
+        t.update()
+t.close()
 
 simple_word = re.compile("^[a-z]*")
 words = []
-for word in model.vocab:
+for word in tqdm(iterable=model.vocab, desc='loading words from model'):
 #    if simple_word.match(word) and word in allowable_words:
     words.append(word)
 
 hints = {}
 with open("static/assets/js/secretWords.js") as f:
-    for line in f.readlines():
+    for line in tqdm(iterable=f.readlines(), desc='generating hints'):
         line = line.strip()
         if not '"' in line:
             continue
         secret = line.strip('",')
+        # secret might not be in the model vocabulary if we loaded a subset
+        # of the model. Skip generating hints if that's the case
+        if secret not in model.vocab:
+            continue
         target_vec = model[secret]
 
         start = time.time()
 #        syns = synonyms.get(secret) or []
         nearest = []
-        for i, word in enumerate(words):
+        for word in tqdm(iterable=words, desc='looking for hints', leave=False, position=1):
 #            if word in syns:
 #                continue
 #            if secret in (synonyms.get(word) or []):
