@@ -1,11 +1,6 @@
 import gensim.models.keyedvectors as word2vec
 
-import math
-
 import heapq
-
-from numpy import dot
-from numpy.linalg import norm
 
 from tqdm import tqdm
 import re
@@ -34,15 +29,6 @@ print("loading word2vec file...")
 model = word2vec.KeyedVectors.load_word2vec_format("../GoogleNews-vectors-negative300.bin", binary=True, limit=word_limit)
 print(f'done in {time.process_time() - t_word2vec} seconds')
 
-def mag(v):
-    return math.sqrt(sum(x * x for x in v))
-
-def similarity(v1, v2):
-    return abs(sum(a * b for a, b in zip(v1, v2)) / (mag(v1)*mag(v2)))
-
-def similarity(a, b):
-    return abs(dot(a, b)/(norm(a)*norm(b)))
-
 # synonyms = {}
 
 # with open("moby/words.txt") as moby:
@@ -70,7 +56,7 @@ for word in tqdm(iterable=model.vocab, desc='loading words from model'):
 
 hints = {}
 with open("static/assets/js/secretWords.js") as f:
-    for line in tqdm(iterable=f.readlines(), desc='generating hints'):
+    for line in tqdm(iterable=f.readlines(), desc='generating hints (takes 1~2 minutes to start)'):
         line = line.strip()
         if not '"' in line:
             continue
@@ -79,25 +65,23 @@ with open("static/assets/js/secretWords.js") as f:
         # of the model. Skip generating hints if that's the case
         if secret not in model.vocab:
             continue
-        target_vec = model[secret]
-
-        start = time.time()
-#        syns = synonyms.get(secret) or []
+        # Calculate nearest using KeyedVectors' `most_similar`.
+        # It calculates cosine similarity, which is _exactly_ what
+        # this module's `similarity` does.
+        # The first call to `most_similar` is s l o w: the progress
+        # indicator will start moving after a minute or so.
+        # This is _way_ faster than doing a nested "secret x vocab" loop.
         nearest = []
-        for word in tqdm(iterable=words, desc='looking for hints', leave=False, position=1):
-#            if word in syns:
-#                continue
-#            if secret in (synonyms.get(word) or []):
-#                # yow, asymmetrical!
-#                continue
-#            if word in secret or secret in word:
-#                continue
-            vec = model[word]
-            s = similarity(vec, target_vec)
-            if len(nearest) > 1000:
-                heapq.heappushpop(nearest, (s, word))
-            else:
-                heapq.heappush(nearest, (s, word))
+        # TODO: figure out a pythonic way to swap the tuples (map?)
+        for most_similar in model.most_similar(secret, topn=1000):
+            heapq.heappush(nearest, (most_similar[1], most_similar[0]))
+        # The old way has `nearest` include the similarity with itself.
+        # `most_similar` doesn't, so we need to add it manually.
+        if len(nearest) >= 1000:
+            heapq.heappushpop(nearest, (1, secret))
+        else:
+            heapq.heappush(nearest, (1, secret))
+
         nearest.sort()
         hints[secret] = nearest
 
