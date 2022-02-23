@@ -94,9 +94,10 @@ with open("static/assets/js/secretWords.js") as f:
 #                continue
             vec = model[word]
             s = similarity(vec, target_vec)
-            heapq.heappush(nearest, (s, word))
             if len(nearest) > 1000:
-                heapq.heappop(nearest)
+                heapq.heappushpop(nearest, (s, word))
+            else:
+                heapq.heappush(nearest, (s, word))
         nearest.sort()
         hints[secret] = nearest
 
