@@ -63,7 +63,10 @@ def similarity(word):
         con = sqlite3.connect('word2vec.db')
         cur = con.cursor()
         res = cur.execute("SELECT top, top10, rest FROM similarity_range WHERE word = ?", (word,))
-        res = list(cur.fetchone())
+        one = cur.fetchone()
+        if not one:
+            return ""
+        res = list(one)
         con.close()
         if not res:
             return ""
