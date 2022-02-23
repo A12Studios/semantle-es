@@ -2,6 +2,8 @@ import sqlite3
 
 import pickle
 
+from tqdm import tqdm
+
 con = sqlite3.connect('word2vec.db')
 cur = con.cursor()
 cur.execute("""create table if not exists nearby (word text, neighbor text, similarity float, percentile integer)""")
@@ -19,6 +21,7 @@ con.commit()
 with open(b"nearest.pickle", "rb") as f:
     nearest = pickle.load(f)
 
+t = tqdm(desc='inserting hints into db', total=len(nearest))
 for i, (secret, neighbors) in enumerate(nearest.items()):
     if i % 1111 == 0:
         con.commit()
@@ -29,5 +32,6 @@ for i, (secret, neighbors) in enumerate(nearest.items()):
     top10 = neighbors[-12][0]
     rest = neighbors[0][0]
     con.execute ("insert into similarity_range (word, top, top10, rest) values (?, ?, ?, ?)", (secret, "%s" % top, "%s" % top10, "%s" % rest))
+    t.update()
 
 con.commit()
