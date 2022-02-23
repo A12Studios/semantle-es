@@ -8,45 +8,12 @@ import time
 
 import code, traceback, signal
 
-def debug(sig, frame):
-    """Interrupt running process, and provide a python prompt for
-    interactive debugging."""
-    d={'_frame':frame}         # Allow access to frame object.
-    d.update(frame.f_globals)  # Unless shadowed by global
-    d.update(frame.f_locals)
-
-    i = code.InteractiveConsole(d)
-    message  = "Signal received : entering python shell.\nTraceback:\n"
-    message += ''.join(traceback.format_stack(frame))
-    i.interact(message)
-
-signal.signal(signal.SIGUSR1, debug)  # Register handler
-
 # Set to None to read all words in the model. Useful to set a low number to test script.
 word_limit = None
 t_word2vec = time.process_time()
 print("loading word2vec file...")
-model = word2vec.KeyedVectors.load_word2vec_format("../GoogleNews-vectors-negative300.bin", binary=True, limit=word_limit)
+model = word2vec.KeyedVectors.load_word2vec_format("../SBW-vectors-300-min5.bin", binary=True, limit=word_limit)
 print(f'done in {time.process_time() - t_word2vec} seconds')
-
-# synonyms = {}
-
-# with open("moby/words.txt") as moby:
-#     for line in moby.readlines():
-#         line = line.strip()
-#         words = line.split(",")
-#         word = words[0]
-#         synonyms[word] = set(words)
-
-print("loaded moby...")
-
-t = tqdm(desc='loading words_alpha.txt')
-allowable_words = set()
-with open("words_alpha.txt") as walpha:
-    for line in walpha.readlines():
-        allowable_words.add(line.strip())
-        t.update()
-t.close()
 
 simple_word = re.compile("^[a-z]*")
 words = []
