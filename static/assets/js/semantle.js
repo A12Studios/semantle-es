@@ -17,7 +17,7 @@ let guessCount = 0;
 let model = null;
 const now = Date.now();
 const today = Math.floor(now / 86400000);
-const initialDay = 19021;
+const initialDay = 19044;
 const puzzleNumber = (today - initialDay) % secretWords.length;
 const yesterdayPuzzleNumber = (today - initialDay + secretWords.length - 1) % secretWords.length;
 const storage = window.localStorage;
@@ -122,7 +122,7 @@ function select(word, secretVec) {
 }
 
 function guessRow(similarity, oldGuess, percentile, guessNumber, guess) {
-    let percentileText = "(cold)";
+    let percentileText = "(fr&iacute;o)";
     let progress = "";
     let cls = "";
     if (similarity >= similarityStory.rest * 100) {
@@ -130,7 +130,7 @@ function guessRow(similarity, oldGuess, percentile, guessNumber, guess) {
     }
     if (percentile) {
         if (percentile == 1000) {
-            percentileText = "FOUND!";
+            percentileText = "BUENA!";
         } else {
             cls = "close";
             percentileText = `<span style="text-align:right; width:5em; display:inline-block;">${percentile}/1000</span>&nbsp;`;
@@ -154,21 +154,21 @@ function updateLocalTime() {
     const now = new Date();
     now.setUTCHours(24, 0, 0, 0);
 
-    $('#localtime').innerHTML = `or ${now.getHours()}:00 your time`;
+    $('#localtime').innerHTML = `o ${now.getHours()}:00 de tu zona horaria`;
 }
 
 function solveStory(guesses, puzzleNumber) {
     const guess_count = guesses.length;
     if (guess_count == 0) {
-        return `I gave up on Semantle ${puzzleNumber} without even guessing once.`;
+        return `Me rendí en el Semantle en español número ${puzzleNumber} sin siquiera intentar.`;
     }
 
     if (guess_count == 1) {
-        return `I got Semantle ${puzzleNumber} on my first guess!`;
+        return `Gané Semantle en español número ${puzzleNumber} en mi primer intento!`;
     }
 
     let describe = function(similarity, percentile) {
-        let out = `had a similarity of ${similarity.toFixed(2)}`;
+        let out = `con una similaridad de ${similarity.toFixed(2)}`;
         if (percentile) {
             out += ` (${percentile}/1000)`;
         }
@@ -179,7 +179,7 @@ function solveStory(guesses, puzzleNumber) {
     guesses_chrono.sort(function(a, b){return a[3]-b[3]});
 
     let [similarity, old_guess, percentile, guess_number] = guesses_chrono[0];
-    let first_guess = `My first guess ${describe(similarity, percentile)}.`;
+    let first_guess = `Mi primer intento fue ${describe(similarity, percentile)}.`;
     let first_guess_in_top = !!percentile;
 
     let first_hit = '';
@@ -187,7 +187,7 @@ function solveStory(guesses, puzzleNumber) {
         for (let entry of guesses_chrono) {
             [similarity, old_guess, percentile, guess_number] = entry;
             if (percentile) {
-                first_hit = `  My first word in the top 1000 was at guess #${guess_number}.  `;
+                first_hit = `  Mi primera palabra en el top 1.000 fue al intento #${guess_number}.  `;
                 break;
             }
         }
@@ -195,9 +195,9 @@ function solveStory(guesses, puzzleNumber) {
 
     const penultimate_guess = guesses_chrono[guesses_chrono.length - 2];
     [similarity, old_guess, percentile, guess_number] = penultimate_guess;
-    const penultimate_guess_msg = `My penultimate guess ${describe(similarity, percentile)}.`;
+    const penultimate_guess_msg = `Mi penúltimo intento fue ${describe(similarity, percentile)}.`;
 
-    return `I solved Semantle #${puzzleNumber} in ${guess_count} guesses. ${first_guess}${first_hit}${penultimate_guess_msg} https://semantle.novalis.org/`;
+    return `Resolví Semantle en español #${puzzleNumber} en ${guess_count} intentos. ${first_guess}${first_hit}${penultimate_guess_msg} http://semantle-es.cgk.cl/`;
 }
 
 let Semantle = (function() {
@@ -238,25 +238,23 @@ let Semantle = (function() {
         secret = secretWords[puzzleNumber].toLowerCase();
         const yesterday = secretWords[yesterdayPuzzleNumber].toLowerCase();
 
-        $('#yesterday').innerHTML = `Yesterday's word was <b>"${yesterday}"</b>.`;
+        $('#yesterday').innerHTML = `La palabra de ayer fue <b>"${yesterday}"</b>.`;
         $('#yesterday2').innerHTML = yesterday;
 
         try {
             const yesterdayNearby = await getNearby(yesterday);
             const secretBase64 = btoa(yesterday);
-            $('#nearbyYesterday').innerHTML = `${yesterdayNearby.join(", ")}, in descending order of closensess. <a href="nearby_1k/${secretBase64}">More?</a>`;
+            $('#nearbyYesterday').innerHTML = `${yesterdayNearby.join(", ")}, en orden descendiente de cercan&iacute;a. <a href="nearby_1k/${secretBase64}">Más?</a>`;
         } catch (e) {
-            $('#nearbyYesterday').innerHTML = `Coming soon!`;
+            $('#nearbyYesterday').innerHTML = `Ya viene!`;
         }
         updateLocalTime();
 
         try {
             similarityStory = await getSimilarityStory(secret);
             $('#similarity-story').innerHTML = `
-Today, puzzle number <b>${puzzleNumber}</b>, the nearest word has a similarity of
-<b>${(similarityStory.top * 100).toFixed(2)}</b>, the tenth-nearest has a similarity of
-${(similarityStory.top10 * 100).toFixed(2)} and the one thousandth nearest word has a
-similarity of ${(similarityStory.rest * 100).toFixed(2)}.
+Hoy, el puzzle número <b>${puzzleNumber}</b>, la palabra más cercana tiene una similaridad de 
+<b>${(similarityStory.top * 100).toFixed(2)}</b>, la décima ${(similarityStory.top10 * 100).toFixed(2)} y la milésima ${(similarityStory.rest * 100).toFixed(2)}.
 `;
         } catch {
             // we can live without this in the event that something is broken
@@ -270,7 +268,7 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
 
         $('#give-up-btn').addEventListener('click', function(event) {
             if (!gameOver) {
-                if (confirm("Are you sure you want to give up?")) {
+                if (confirm("Seguro quieres rendirte?")) {
                     endGame(0);
                 }
             }
@@ -307,7 +305,7 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
 
             const guessData = await getModel(guess);
             if (!guessData) {
-                $('#error').textContent = `I don't know the word ${guess}.`;
+                $('#error').textContent = `No conozco la palabra ${guess}.`;
                 return false;
             }
 
@@ -354,7 +352,7 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
     }
 
     function updateGuesses(guess) {
-        let inner = `<tr><th id="chronoOrder">#</th><th id="alphaOrder">Guess</th><th id="similarityOrder">Similarity</th><th>Getting close?</th></tr>`;
+        let inner = `<tr><th id="chronoOrder">#</th><th id="alphaOrder">Intento</th><th id="similarityOrder">Similaridad</th><th>Acercándote?</th></tr>`;
         /* This is dumb: first we find the most-recent word, and put
            it at the top.  Then we do the rest. */
         for (let entry of guesses) {
@@ -403,9 +401,9 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
         gameOver = true;
         const secretBase64 = btoa(secret);
         if (guessCount > 0) {
-            $('#response').innerHTML = `<b>You found it in ${guessCount}!  The secret word is ${secret}</b>.  Feel free to keep entering words if you are curious about the similarity to other words. <a href="javascript:share();">Share</a> and play again tomorrow.  You can see the nearest words <a href="nearby_1k/${secretBase64}">here</a>.`
+            $('#response').innerHTML = `<b>La encontraste en ${guessCount} intentos!  La palabra secreta es ${secret}</b>.  Puedes seguir intentando con otras palabras para ver su cercan&iacute;a. <a href="javascript:share();">Comparte</a> y juega otra vez mañana. Puedes ver las 1.000 palabras más cercanas <a href="nearby_1k/${secretBase64}">aquí</a>.`
         } else {
-            $('#response').innerHTML = `<b>You gave up!  The secret word is: ${secret}</b>.  Feel free to keep entering words if you are curious about the similarity to other words.  You can see the nearest words <a href="nearby_1k/${secretBase64}">here</a>.`;
+            $('#response').innerHTML = `<b>Te rendiste!  La palabra secreta es: ${secret}</b>.  Puedes seguir intentando con otras palabras para ver su cercan&iacute;a. <a href="javascript:share();">Comparte</a> y juega otra vez mañana. Puedes ver las 1.000 palabras más cercanas <a href="nearby_1k/${secretBase64}">aquí</a>.`;
         }
         saveGame(guessCount);
     }
