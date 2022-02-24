@@ -16,6 +16,13 @@ This is a spanish version of [Semantle](https://semantle.novalis.org).
 ### Running it
 1. Run web server: `python3 semantle.py`
 
+## Running in production
+### One-time setup
+TBD
+
+### Running it
+1. Run web server: `./start_server_prod.sh`
+
 ## Attribution
 Original Semantle code by [David Turner](https://novalis.org). Changes:
   - Improved `dump-hints.py` performance
