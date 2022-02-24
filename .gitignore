@@ -5,3 +5,5 @@ bin/
 data/
 lib/
 pyvenv.cfg
+__pycache__
+logs/*
