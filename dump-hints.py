@@ -12,7 +12,7 @@ import code, traceback, signal
 word_limit = None
 t_word2vec = time.process_time()
 print("loading word2vec file...")
-model = word2vec.KeyedVectors.load_word2vec_format("../SBW-vectors-300-min5.bin", binary=True, limit=word_limit)
+model = word2vec.KeyedVectors.load_word2vec_format("data/SBW-vectors-300-min5.bin", binary=True, limit=word_limit)
 print(f'done in {time.process_time() - t_word2vec} seconds')
 
 simple_word = re.compile("^[a-z]*")

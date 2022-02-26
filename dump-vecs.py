@@ -6,7 +6,7 @@ from tqdm import tqdm
 
 t_word2vec = time.process_time()
 print("loading word2vec file...")
-model = word2vec.KeyedVectors.load_word2vec_format("../SBW-vectors-300-min5.bin", binary=True)
+model = word2vec.KeyedVectors.load_word2vec_format("data/SBW-vectors-300-min5.bin", binary=True)
 print(f'done in {time.process_time() - t_word2vec} seconds')
 
 print("creating word2vec table...")
