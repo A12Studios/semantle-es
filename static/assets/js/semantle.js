@@ -289,10 +289,6 @@ Hoy, el puzzle número <b>${puzzleNumber}</b>, la palabra más cercana tiene una
                 guess = guess.toLowerCase();
             }
 
-            if (typeof unbritish !== undefined && unbritish.hasOwnProperty(guess)) {
-                guess = unbritish[guess];
-            }
-
             if (guess[0].toLowerCase() != guess[0]) {
                 caps += 1;
             }
