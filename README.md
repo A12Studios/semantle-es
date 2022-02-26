@@ -4,9 +4,8 @@ This is a spanish version of [Semantle](https://semantle.novalis.org).
 
 ## Running locally
 ### One-time setup
-1. Get spanish Word2vec dataset from [Spanish Billion Word Corpus and Embeddings](https://crscardellino.github.io/SBWCE/). Download the word2vec binary format.
-1. Save dataset on the parent directory
-1. Create a python virtual environment: `python3 -m venv`
+1. Get spanish Word2vec dataset from [Spanish Billion Word Corpus and Embeddings](https://crscardellino.github.io/SBWCE/). Download the word2vec binary format to the `data` directory. _Unzip it_
+1. Create a python virtual environment: `python3 -m venv .`
 1. Activate the environment: `source bin/activate`
 1. Install all dependencies: `python3 -m pip install -r requirements.txt`
 1. Load model into sqlite db: `python3 dump-vecs.py`. Takes ~5min in a 2.4 GHz Intel Core i5 MacBook Pro
