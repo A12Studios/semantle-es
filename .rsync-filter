@@ -1,0 +1,12 @@
+- .git/
+- .gitignore
+- *.bak
+- *.swp
+- *.tmp
+- nearest.pickle
+- bin/
+- lib/
+- data/
+- pyvenv.cfg
+- __pycache__
+- logs/
