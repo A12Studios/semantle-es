@@ -6,7 +6,7 @@ future==0.17.1
 gensim==3.6.0
 itsdangerous==2.0.1
 Jinja2==3.0.3
-joblib==1.1.0
+joblib==1.2.0
 MarkupSafe==2.0.1
 nltk==3.6.7
 numpy==1.22.1
