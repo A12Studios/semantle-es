@@ -16,5 +16,5 @@ scipy==1.7.3
 six==1.16.0
 smart-open==5.2.1
 tqdm==4.62.3
-Werkzeug==2.0.2
+Werkzeug==2.2.3
 gunicorn==19.9.0
